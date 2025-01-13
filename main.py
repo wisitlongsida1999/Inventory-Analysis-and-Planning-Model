@@ -74,7 +74,7 @@ class InventoryOptimizer:
                     try:
                         model = ExponentialSmoothing(
                             product_sales['productQuantity'],
-                            seasonal_periods=3,
+                            seasonal_periods=4,
                             trend='add',
                             seasonal='add',
                             initialization_method="estimated"
