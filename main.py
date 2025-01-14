@@ -30,13 +30,13 @@ class InventoryOptimizer:
             if col in self.sales_df.columns:
                 self.sales_df[col] = pd.to_numeric(self.sales_df[col], errors='coerce').fillna(0)
         
-        # แปลง documentDate เป็น datetime
-        self.sales_df['documentDate'] = pd.to_datetime(self.sales_df['documentDate'], errors='coerce')
-        self.sales_df = self.sales_df.dropna(subset=['documentDate'])
+        # แปลง Date เป็น datetime
+        self.sales_df['Date'] = pd.to_datetime(self.sales_df['Date'], errors='coerce')
+        self.sales_df = self.sales_df.dropna(subset=['Date'])
         
     def preprocess_data(self):
         self.monthly_sales = (self.sales_df.groupby([
-            pd.Grouper(key='documentDate', freq='M'),
+            pd.Grouper(key='Date', freq='M'),
             'product'
         ])['productQuantity']
         .sum()
@@ -56,7 +56,7 @@ class InventoryOptimizer:
                 
             product_sales = self.monthly_sales[
                 self.monthly_sales['product'] == product
-            ].sort_values('documentDate')
+            ].sort_values('Date')
             
             if len(product_sales) > 0:
                 # แปลง productQuantity เป็น numeric และแทนที่ค่า NaN ด้วย 0
@@ -197,7 +197,7 @@ class InventoryOptimizer:
     def analyze_sales_trend(self):
         """วิเคราะห์เทรนด์การขายรายเดือน"""
         monthly_trend = self.sales_df.groupby([
-            pd.Grouper(key='documentDate', freq='M'),
+            pd.Grouper(key='Date', freq='M'),
             'product'
         ]).agg({
             'productQuantity': 'sum',
@@ -374,7 +374,7 @@ def main():
                 if not product_trend.empty:
                     fig_trend = px.line(
                         product_trend,
-                        x='documentDate',
+                        x='Date',
                         y='productQuantity',
                         title=f'แนวโน้มการขาย {selected_product}'
                     )
@@ -388,8 +388,8 @@ def main():
                 
                 # สร้างกราฟเทรนด์การขายรวม
                 fig_total_trend = px.line(
-                    sales_trend.groupby('documentDate')['productQuantity'].sum().reset_index(),
-                    x='documentDate',
+                    sales_trend.groupby('Date')['productQuantity'].sum().reset_index(),
+                    x='Date',
                     y='productQuantity',
                     title='เทรนด์การขายรวมทุกสินค้า'
                 )
@@ -398,7 +398,7 @@ def main():
                 # สร้างกราฟเทรนด์การขายแยกตามสินค้า
                 fig_product_trend = px.line(
                     sales_trend,
-                    x='documentDate',
+                    x='Date',
                     y='productQuantity',
                     color='product',
                     title='เทรนด์การขายแยกตามสินค้า'
