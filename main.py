@@ -217,7 +217,7 @@ def main():
     st.markdown("""
         <style>
         .stApp {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
         .main {
